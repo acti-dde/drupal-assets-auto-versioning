@@ -1,0 +1,9 @@
+{
+  "name": "acti/assets_auto_versioning",
+  "description": "Generate automatic version string based on files' content",
+  "type": "drupal-module",
+  "license": "proprietary",
+  "require": {
+    "drupal/core": "^10 || ^11"
+  }
+}

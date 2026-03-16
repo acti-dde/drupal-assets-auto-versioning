@@ -1,0 +1,7 @@
+name: Assets auto versioning
+package: acti
+description: 'Generate automatic version string based on files'' content'
+version: '1.0'
+
+type: module
+core_version_requirement: ^10 || ^11

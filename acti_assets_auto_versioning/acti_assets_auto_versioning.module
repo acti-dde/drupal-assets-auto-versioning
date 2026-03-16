@@ -1,0 +1,39 @@
+<?php
+
+use Drupal\Core\Extension\Exception\UnknownExtensionException;
+
+/**
+ * Implements HOOK_library_info_alter().
+ */
+function acti_assets_auto_versioning_library_info_alter(&$libraries, $extension)
+{
+    try {
+        $themePath = \Drupal::service('extension.list.theme')->getPath($extension);
+    } catch (UnknownExtensionException $e) {
+        return;
+    }
+
+    foreach ($libraries as $libraryKey => $library) {
+        if (array_key_exists('version', $library) && $library['version'] === 'AUTO') {
+            $hashContext = hash_init('md5');
+
+            foreach (array_keys($library['js'] ?? []) as $path) {
+                $assetPath = $themePath . '/' . $path;
+                if (file_exists($assetPath)) {
+                    hash_update($hashContext, file_get_contents($assetPath));
+                }
+            }
+
+            foreach ($library['css'] ?? [] as $groupKey => $group) {
+                foreach ($library['css'][$groupKey] as $cssPath => $cssOptions) {
+                    $assetPath = $themePath . '/' . $cssPath;
+                    if (file_exists($assetPath)) {
+                        hash_update($hashContext, file_get_contents($assetPath));
+                    }
+                }
+            }
+
+            $libraries[$libraryKey]['version'] = crc32(hash_final($hashContext));
+        }
+    }
+}
